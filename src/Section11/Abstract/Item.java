@@ -3,6 +3,10 @@ package Section11.Abstract;
 public class Item {
     private String name;
     private int amount;
+    public Item(String name){
+        this.name = name;
+        amount = 0;
+    }
     public Item(String name, int amount) {
         this.name = name;
         this.amount = amount;
@@ -26,7 +30,11 @@ public class Item {
 
     @Override
     public int hashCode() {
-        return super.hashCode();
+        int sum=0;
+        for(var c:name.toCharArray()){
+            sum += c;
+        }
+        return sum;
     }
 
     @Override

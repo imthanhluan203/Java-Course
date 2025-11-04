@@ -2,12 +2,12 @@ package Section11.Abstract;
 
 import java.util.ArrayList;
 
-public class BoxWithMaxWeight extends Box{
-    private ArrayList<Item> arr;
+public class OneItemBox extends Box{
     private int capacity;
-    public BoxWithMaxWeight(int capacity){
-        this.capacity = capacity;
-        arr=new ArrayList<>();
+    private ArrayList<Item> arr;
+    public OneItemBox(){
+        capacity = 1;
+        arr = new ArrayList<>();
     }
     @Override
     public void add(Item item){
@@ -16,7 +16,7 @@ public class BoxWithMaxWeight extends Box{
             if(amount > capacity){
                 amount = capacity;
             }
-
+            System.out.println("Amount is:" + amount);
             arr.add(new Item(item.getName(),amount));
             this.capacity -= amount;
             System.out.println("Add Item successfully");
@@ -35,5 +35,4 @@ public class BoxWithMaxWeight extends Box{
         }
         return false;
     }
-
 }
