@@ -8,10 +8,15 @@ interface Flyable{
         System.out.println("This is test log");
         log();
     }
-    default void fly(){
+    default  void fly(){
         System.out.println("The className is:"+this.getClass().getSimpleName());
         log();
     }
 }
 public class InterfaceExample implements Flyable{
+    @Override
+    public void fly(){
+        Flyable.super.fly();
+        System.out.println(Flyable.length);
+    }
 }
