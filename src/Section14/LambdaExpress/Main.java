@@ -3,8 +3,10 @@ package Section14.LambdaExpress;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
+import java.util.function.Supplier;
 
 public class Main {
     public static void main(String[] args) {
@@ -49,8 +51,18 @@ public class Main {
         System.out.println(Arrays.toString(arrays));
         Arrays.fill(arrays,"");
         System.out.println(Arrays.toString(arrays));
-        Arrays.setAll(arrays,(i)->"--%d--".formatted(i));
+        Arrays.setAll(arrays,(i)->"--%s--".formatted(
+                switch (i){
+                    case 0 -> "one";
+                    case 1 -> "two";
+                    case 2 -> "three";
+                    default -> "";
+                }
+        ));
         System.out.println(Arrays.toString(arrays));
+        String[] nameList = {"Luan","Dat","Ha","Hieu","Vy","Linh"};
+        String[] personChoose = randomSelectedValues(10,nameList,()-> new Random().nextInt(0,nameList.length));
+        System.out.println(Arrays.toString(personChoose));
     }
     public static  <T> T caculator(BinaryOperator<T> function, T value1, T value2){
         T result = function.apply(value1,value2);
@@ -59,5 +71,12 @@ public class Main {
     }
     public static <T> void processPoint(BiConsumer<T,T> function,T value1,T value2){
         function.accept(value1,value2);
+    }
+    public static String[] randomSelectedValues(int count, String[]value, Supplier<Integer>s){
+        String[] selected = new String[count];
+        for(int i=0;i<count;i++){
+            selected[i] = value[s.get()];
+        }
+        return selected;
     }
 }
