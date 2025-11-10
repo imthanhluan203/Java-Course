@@ -19,6 +19,11 @@ public class TreeSetMain {
         phones.forEach(x->justName.add(x.getName()));
         emails.forEach(x->justName.add(x.getName()));
         System.out.println(justName);
+
+        Contact daffy = new Contact("Daffy Duck");
+        Contact daisy = new Contact("Daisy Duck");
+        Contact snoopy = new Contact("Snoopy");
+        Contact archie = new Contact("Archie");
     }
     public static void printData(String header, Collection<Contact> contact){
         System.out.println("-".repeat(50));
