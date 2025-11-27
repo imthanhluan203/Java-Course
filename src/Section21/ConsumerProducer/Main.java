@@ -1,22 +1,51 @@
 package Section21.ConsumerProducer;
 
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 class MessageResoisitory{
     private String message;
     private boolean hasMessage = false;
-    public synchronized String read(){
-        while (!hasMessage){
-
+    private Lock lock = new ReentrantLock();
+    public String read(){
+        if(lock.tryLock()) {
+            try{
+                while (!hasMessage) {
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                hasMessage = false;
+            }finally {
+                lock.unlock();
+            }
+        }else {
+            System.out.println("**Read blocked " + lock);
+            hasMessage = false;
         }
-        hasMessage = false;
         return message;
     }
-    public synchronized void write(String message){
-        while (hasMessage){
-
+    public void write(String message){
+        if(lock.tryLock()){
+            try{
+                while (hasMessage){
+                    try {
+                        Thread.sleep(500);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+                hasMessage = true;
+            }finally {
+                lock.unlock();
+            }
+        }else{
+            System.out.println("** Write blocked " + lock);
+            hasMessage = true;
         }
-        hasMessage = true;
         this.message = message;
     }
 }
@@ -67,14 +96,14 @@ class MessageReader implements Runnable{
             }
             latestMessage = incomeMessage.read();
             System.out.println(latestMessage);
-        }while (latestMessage.equals("Finished"));
+        }while (!latestMessage.equals("Finished"));
     }
 }
 public class Main {
     public static void main(String[] args) {
         MessageResoisitory messageResoisitory = new MessageResoisitory();
-        Thread reader = new Thread(new MessageReader(messageResoisitory));
-        Thread writer = new Thread(new MessageWriter(messageResoisitory));
+        Thread reader = new Thread(new MessageReader(messageResoisitory),"Reader");
+        Thread writer = new Thread(new MessageWriter(messageResoisitory),"Writer");
 
         reader.start();
         writer.start();
