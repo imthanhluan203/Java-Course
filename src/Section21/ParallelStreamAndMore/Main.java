@@ -1,6 +1,8 @@
 package Section21.ParallelStreamAndMore;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -48,19 +50,35 @@ public class Main {
                         StringBuilder::append,
                         StringBuilder::append);
         System.out.println(backTogether2);
-
+//        Map<String, Long> lastNameCounts = Stream.generate(Person::new)
+//                .limit(10000)
+//                .parallel()
+//                .collect(()->new HashMap<String,Long>(),
+//                        (map,person)->{map.merge(person.lastName(),1L, Long::sum);},
+//                        (a,b)->{
+//                            b.forEach((k,v)->{
+//                                a.merge(k,v, Long::sum);
+//                            });
+//                        });
         Map<String, Long> lastNameCounts = Stream.generate(Person::new)
-                .limit(10000)
+                .limit(1000000)
                 .parallel()
-                .collect(()->new HashMap<String,Long>(),
-                        (map,person)->{map.merge(person.lastName(),1L, Long::sum);},
-                        (a,b)->{
-                            b.forEach((k,v)->{
-                                a.merge(k,v, Long::sum);
-                            });
-                        });
-        lastNameCounts.forEach((a,b)->{
-            System.out.println(a + ":" + b);
-        });
+                .collect(Collectors.groupingBy(Person::lastName,Collectors.counting()));
+        Long reduce = lastNameCounts.values().stream().reduce(0L, (a, b) -> a + b);
+        System.out.println(reduce);
+        System.out.println(lastNameCounts.getClass().getName());
+
+        System.out.println("-".repeat(50));
+        var exampleTree = new ConcurrentSkipListMap<String,Long>();
+        Stream.generate(Person::new)
+                .limit(100)
+                .parallel()
+                .forEach(x->{
+                    exampleTree.merge(x.lastName(),1L,Long::sum);
+                });
+        Long reduce2 = exampleTree.values().stream().reduce(0L, (a, b) -> a + b);
+        System.out.println(reduce2);
+        System.out.println(exampleTree.getClass().getName());
+
     }
 }
