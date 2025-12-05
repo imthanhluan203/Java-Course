@@ -6,11 +6,43 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class SImpleServer {
     public static void main(String[] args) {
         try (ServerSocket serverSocket = new ServerSocket(5000)) {
-            Socket socket = serverSocket.accept();
+            ExecutorService executorService = Executors.newFixedThreadPool(10);
+            while (true){
+                try {
+                    Socket socket = serverSocket.accept();
+                    executorService.submit(()->{
+                        handleConnection(socket);
+                    });
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+            }
+
+//            System.out.println("Server accepts client connection");
+//            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+//            PrintWriter output = new PrintWriter(socket.getOutputStream(),true);
+//            while (true){
+//                String echoString = input.readLine();
+//                System.out.println("Server got request data: "+echoString);
+//                if(echoString.equals("exit")){
+//                    System.out.println("Server exit");
+//                    break;
+//                }
+//                output.println("Echo from server: " + echoString);
+//            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    public static void handleConnection(Socket socket){
+        try{
             System.out.println("Server accepts client connection");
             BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
             PrintWriter output = new PrintWriter(socket.getOutputStream(),true);
@@ -24,7 +56,14 @@ public class SImpleServer {
                 output.println("Echo from server: " + echoString);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
+        }finally {
+            try {
+                socket.close();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
+
     }
 }
