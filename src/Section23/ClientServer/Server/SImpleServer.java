@@ -14,8 +14,13 @@ public class SImpleServer {
         try (ServerSocket serverSocket = new ServerSocket(5000)) {
             ExecutorService executorService = Executors.newFixedThreadPool(10);
             while (true){
+                //Để main ko bị thoát
+                //nếu ko có while chương trình ko thể tạo nhiều kết nối của
+                //client đến server
                 try {
                     Socket socket = serverSocket.accept();
+                    //treo ngay tại đây đợi client connect đến server
+                    //rồi mới chạy tiếp
                     executorService.submit(()->{
                         handleConnection(socket);
                     });
